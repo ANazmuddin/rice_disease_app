@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'screens/welcome_screen.dart';
 
 void main() {
   runApp(const RiceDiseaseApp());
@@ -13,11 +13,15 @@ class RiceDiseaseApp extends StatelessWidget {
     return MaterialApp(
       title: 'Rice Disease Detector',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF2E7D32), // Forest Green
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const WelcomeScreen(),
     );
   }
-}
+} 

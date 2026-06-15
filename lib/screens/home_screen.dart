@@ -15,32 +15,24 @@ class _HomeScreenState extends State<HomeScreen> {
   File? _selectedImage;
   bool _isLoading = false;
   Map<String, dynamic>? _predictionResult;
-
   final ImagePicker _picker = ImagePicker();
 
-  // Fungsi untuk mengambil gambar dari Kamera atau Galeri
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
-    
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
-        _predictionResult = null; // Reset hasil sebelumnya jika ada
+        _predictionResult = null;
       });
-      
-      // Langsung eksekusi analisis setelah gambar dipilih
       _analyzeImage();
     }
   }
 
-  // Fungsi untuk mengirim gambar ke Backend API
   Future<void> _analyzeImage() async {
     if (_selectedImage == null) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
+    
+    setState(() { _isLoading = true; });
+    
     try {
       final result = await ApiService.predictDisease(_selectedImage!);
       setState(() {
@@ -48,12 +40,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() { _isLoading = false; });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent),
         );
       }
     }
@@ -62,135 +52,181 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF9FBF9),
       appBar: AppBar(
-        title: const Text('Rice Disease AI', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.green,
+        title: const Text('Deteksi Penyakit', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20)),
+        backgroundColor: const Color(0xFF2E7D32),
         foregroundColor: Colors.white,
         centerTitle: true,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. Area Penampil Gambar Asli
+            // Kontainer Utama Pratinjau Gambar Asli
             Container(
-              height: 250,
+              height: 260,
               decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green, width: 2),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: _selectedImage != null
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(24),
                       child: Image.file(_selectedImage!, fit: BoxFit.cover),
                     )
-                  : const Center(
-                      child: Text('Belum ada daun yang difoto',
-                          style: TextStyle(color: Colors.grey, fontSize: 16))),
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.image_search_rounded, size: 56, color: Colors.grey[400]),
+                        const SizedBox(height: 12),
+                        Text('Silakan unggah sampel foto daun padi', 
+                          style: TextStyle(color: Colors.grey[500], fontSize: 14)),
+                      ],
+                    ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
-            // 2. Tombol Aksi (Kamera & Galeri)
+            // Tombol Kontrol Modern
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () => _pickImage(ImageSource.camera),
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Kamera'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: const Icon(Icons.camera_alt_rounded, size: 20),
+                    label: const Text('Kamera', style: TextStyle(fontWeight: FontWeight.w600)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2E7D32),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                    ),
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                  icon: const Icon(Icons.photo_library),
-                  label: const Text('Galeri'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[100],
-                    foregroundColor: Colors.green[900],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library_rounded, size: 20),
+                    label: const Text('Galeri', style: TextStyle(fontWeight: FontWeight.w600)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE8F5E9),
+                      foregroundColor: const Color(0xFF2E7D32),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
 
-            // 3. Indikator Loading
+            // Indikator Loading
             if (_isLoading)
-              const Center(
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: Column(
+                    children: [
+                      const CircularProgressIndicator(color: Color(0xFF2E7D32), strokeWidth: 3),
+                      const SizedBox(height: 16),
+                      Text('AI sedang membedah struktur bercak...', 
+                        style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic, fontSize: 14)),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Tampilan Output Analisis & Grad-CAM
+            if (_predictionResult != null && !_isLoading) ...[
+              
+              // Kartu Hasil Diagnosis
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+                  ],
+                ),
                 child: Column(
                   children: [
-                    CircularProgressIndicator(color: Colors.green),
-                    SizedBox(height: 15),
-                    Text('AI sedang menganalisis pola bercak daun...',
-                        style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+                    const Text('HASIL DIAGNOSIS PAKAR AI', 
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
+                    const SizedBox(height: 8),
+                    Text(
+                      _predictionResult!['data']['disease'].toString().toUpperCase().replaceAll('_', ' '),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF1B5E20)),
+                    ),
+                    const SizedBox(height: 4),
+                    Text('Tingkat Keyakinan: ${_predictionResult!['data']['confidence']}%', 
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700], fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
 
-            // 4. Area Hasil Prediksi & Visualisasi Grad-CAM
-            if (_predictionResult != null && !_isLoading) ...[
-              const Divider(thickness: 2),
-              const SizedBox(height: 15),
-              
-              Text(
-                'Diagnosis: ${_predictionResult!['data']['disease'].toString().toUpperCase()}',
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                'Tingkat Keyakinan: ${_predictionResult!['data']['confidence']}%',
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-
-              // Bagian Paling Krusial: Render Base64 menjadi Gambar Asli
-              const Text(
-                'Peta Analisis AI (Grad-CAM):',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.memory(
-                  // base64Decode mengubah teks string menjadi byte gambar visual
-                  base64Decode(_predictionResult!['data']['gradcam_image'].split(',').last),
-                  fit: BoxFit.cover,
+              // Kartu Visualisasi Grad-CAM
+              const Text('Karakteristik Fokus Bercak (Grad-CAM)', 
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A))),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.memory(
+                    base64Decode(_predictionResult!['data']['gradcam_image'].split(',').last),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              // Rekomendasi Penanganan
+              // Kartu Rekomendasi
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.orange[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.orange),
+                  color: const Color(0xFFFFFDE7),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xFFFFF59D).withOpacity(0.5)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.health_and_safety, color: Colors.orange),
+                        Icon(Icons.gpp_good_rounded, color: Color(0xFFFBC02D), size: 24),
                         SizedBox(width: 8),
-                        Text('Rekomendasi Pakar:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text('Tindakan Penanganan:', 
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF574300))),
                       ],
                     ),
-                    const Divider(color: Colors.orange),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Text(
                       _predictionResult!['data']['recommendation'],
-                      style: const TextStyle(fontSize: 15, height: 1.5),
+                      style: const TextStyle(fontSize: 14, height: 1.6, color: Color(0xFF574300), fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ],
         ),

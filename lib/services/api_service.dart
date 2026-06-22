@@ -6,7 +6,7 @@ class ApiService {
   // TODO: Sesuaikan IP ini.
   // Gunakan '10.0.2.2' untuk Android Emulator.
   // Gunakan IP WiFi laptopmu (misal: '192.168.1.5') jika test di HP fisik.
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  static const String baseUrl = 'http://192.168.0.44:8000';
 
   static Future<Map<String, dynamic>> predictDisease(File imageFile) async {
     try {

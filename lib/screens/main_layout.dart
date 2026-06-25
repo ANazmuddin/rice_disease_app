@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart'; 
-// import 'scan_screen.dart';
+import 'scan_screen.dart';
 // import 'guide_screen.dart';
-// import 'history_screen.dart';
+import 'history_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -17,9 +17,9 @@ class _MainLayoutState extends State<MainLayout> {
   // Daftar halaman sementara (Placeholder) sebelum kita desain satu-satu
   static const List<Widget> _pages = <Widget>[
     HomeScreen(),
-    Center(child: Text('Halaman Scan (Segera Hadir)', style: TextStyle(fontSize: 20))),
+    ScanScreen(),
     Center(child: Text('Halaman Guide (Segera Hadir)', style: TextStyle(fontSize: 20))),
-    Center(child: Text('Halaman History (Segera Hadir)', style: TextStyle(fontSize: 20))),
+    HistoryScreen(),
   ];
 
   void _onItemTapped(int index) {

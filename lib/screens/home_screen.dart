@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/weather_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,6 +29,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Fungsi ekstraktor nama dari Firebase Auth
+  String _getUserGreeting() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 'Petani';
+
+    // 1. Jika suatu saat menggunakan Login Google dan memiliki Display Name
+    if (user.displayName != null && user.displayName!.isNotEmpty) {
+      return user.displayName!;
+    }
+
+    // 2. Jika menggunakan Email biasa, potong teks sebelum '@'
+    final email = user.email;
+    if (email != null && email.contains('@')) {
+      String username = email.split('@')[0];
+      // Mengubah huruf pertama menjadi kapital (contoh: "joko99" -> "Joko99")
+      return username[0].toUpperCase() + username.substring(1);
+    }
+
+    return 'Petani';
+  }
+
   // Data statis untuk Ensiklopedia Penyakit
   final List<Map<String, String>> _diseases = [
     {
@@ -55,10 +77,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Sapaan (Placeholder sebelum ada sistem Login)
-            const Text(
-              'Halo, Pak Budi',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20)),
+            // Header Sapaan Dinamis
+            Text(
+              'Halo, ${_getUserGreeting()}',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20)),
             ),
             const SizedBox(height: 4),
             Text(
@@ -75,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildScanCTA(),
             const SizedBox(height: 28),
 
-            // Bagian Ensiklopedia Penyakit (Dulu: Tips & Berita Tani)
+            // Bagian Ensiklopedia Penyakit
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -141,8 +163,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildScanCTA() {
     return InkWell(
       onTap: () {
-        // Karena tombol ini ada di dalam Home, kita arahkan user untuk memencet tab Scan di bawah.
-        // Nanti saat integrasi state management, kita bisa memindahkan tab secara otomatis.
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Silakan tekan tab "Scan" di menu bawah untuk memindai.')),
         );

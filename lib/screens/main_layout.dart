@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart'; 
 import 'scan_screen.dart';
-// import 'guide_screen.dart';
+import 'guide_screen.dart';
 import 'history_screen.dart';
 
 class MainLayout extends StatefulWidget {
@@ -18,7 +18,7 @@ class _MainLayoutState extends State<MainLayout> {
   static const List<Widget> _pages = <Widget>[
     HomeScreen(),
     ScanScreen(),
-    Center(child: Text('Halaman Guide (Segera Hadir)', style: TextStyle(fontSize: 20))),
+    GuideScreen(),
     HistoryScreen(),
   ];
 

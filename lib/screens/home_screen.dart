@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/weather_service.dart';
+import 'disease_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,22 +51,31 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'Petani';
   }
 
-  // Data statis untuk Ensiklopedia Penyakit
-  final List<Map<String, String>> _diseases = [
+  // Data lengkap untuk Ensiklopedia Penyakit
+  final List<Map<String, dynamic>> _diseases = [
     {
       'title': 'Blast (Pirikularia)',
       'desc': 'Penyakit jamur yang menyerang daun, ditandai dengan bercak belah ketupat memanjang.',
-      'color': '0xFFE8F5E9' // Hijau sangat muda
+      'color': '0xFFE8F5E9',
+      'pathogen': 'Pyricularia oryzae',
+      'symptoms': 'Muncul bercak berbentuk belah ketupat dengan ujung runcing. Pusat bercak berwarna abu-abu atau keputihan dengan tepi coklat kemerahan atau keunguan.',
+      'treatment': 'Gunakan fungisida berbahan aktif trisiklazol atau difenokonazol. Kurangi penggunaan pupuk Nitrogen (Urea) secara berlebihan dan pastikan jarak tanam tidak terlalu rapat.',
     },
     {
       'title': 'Brown Spot',
       'desc': 'Bercak coklat oval pada daun akibat jamur, sering terjadi di lahan dengan nutrisi tanah rendah.',
-      'color': '0xFFFFF3E0' // Oranye muda
+      'color': '0xFFFFF3E0',
+      'pathogen': 'Bipolaris oryzae',
+      'symptoms': 'Terdapat bercak coklat berbentuk oval atau melingkar pada daun seukuran biji wijen. Pada infeksi berat, bercak menyatu dan menyebabkan daun mengering sepenuhnya.',
+      'treatment': 'Perbaiki nutrisi tanah dengan menambahkan pupuk Kalium (K) dan pupuk organik. Aplikasikan fungisida berbahan aktif propikonazol jika serangan meluas.',
     },
     {
       'title': 'Hawar Daun Bakteri',
       'desc': 'Infeksi bakteri (Kresek) yang membuat daun menguning dan layu mulai dari ujung hingga pangkal.',
-      'color': '0xFFFFEBEE' // Merah muda pudar
+      'color': '0xFFFFEBEE',
+      'pathogen': 'Xanthomonas oryzae',
+      'symptoms': 'Terdapat bercak abu-abu kehijauan di sepanjang tepi daun yang mulai mengering dan berubah menjadi kuning keputihan. Pada pagi hari, sering terlihat eksudat bakteri berwarna kekuningan.',
+      'treatment': 'Gunakan bakterisida berbahan aktif tembaga. Keringkan lahan sementara (intermittent irrigation) untuk mengurangi kelembapan yang memicu penyebaran bakteri.',
     },
   ];
 
@@ -202,36 +212,50 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: _diseases.length,
         itemBuilder: (context, index) {
           final disease = _diseases[index];
-          return Container(
-            width: 260,
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Color(int.parse(disease['color']!)),
+          
+          return Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: InkWell(
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(8),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DiseaseDetailScreen(disease: disease),
                   ),
-                  child: const Text('PENYAKIT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54, letterSpacing: 0.5)),
+                );
+              },
+              child: Container(
+                width: 260,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Color(int.parse(disease['color'])),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
                 ),
-                const SizedBox(height: 16),
-                Text(disease['title']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black87)),
-                const SizedBox(height: 8),
-                Text(
-                  disease['desc']!, 
-                  style: const TextStyle(fontSize: 13, color: Colors.black54, height: 1.4), 
-                  maxLines: 3, 
-                  overflow: TextOverflow.ellipsis
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text('PENYAKIT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54, letterSpacing: 0.5)),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(disease['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black87)),
+                    const SizedBox(height: 8),
+                    Text(
+                      disease['desc'], 
+                      style: const TextStyle(fontSize: 13, color: Colors.black54, height: 1.4), 
+                      maxLines: 3, 
+                      overflow: TextOverflow.ellipsis
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },
